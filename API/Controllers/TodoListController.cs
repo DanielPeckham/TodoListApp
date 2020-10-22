@@ -3,59 +3,47 @@ using System.Threading.Tasks;
 using API.Data;
 using API.DTOs;
 using API.Entities;
+using API.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace API.Controllers
-{
+namespace API.Controllers {
 
-  public class TodoListController : BaseApiController 
-  {
-    private readonly DataContext context;
-    public TodoListController (DataContext context) 
-    {
-      this.context = context;
+  public class TodoListController : BaseApiController {
+    private readonly IListRepository repo;
+
+    public TodoListController (IListRepository repo) {
+      this.repo = repo;
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<ListItem>>> GetTodoList() 
-    {
-        return await context.ListItems.ToListAsync();
+    public async Task<ActionResult<IEnumerable<ListItem>>> GetTodoList () {
+      var list =  await repo.GetAllItemsAsync();
+      return Ok(list);
     }
 
-    [HttpGet("{id}")]
-    public async Task<ActionResult<ListItem>> GetListItem(int id) 
-    {
-        return await context.ListItems.FindAsync(id);
+    [HttpGet ("{id}")]
+    public async Task<ActionResult<ListItem>> GetListItem (int id) {
+      var item = await repo.GetItemAsync(id);
+      return Ok(item);
     }
 
-    [HttpPost("Item")]
-    [ProducesResponseType(StatusCodes.Status201Created)]
-    public async Task<ActionResult<ListItem>> AddItem([FromBody]ListItemDto listItem) 
-    {
-      var newItem = new ListItem {
-        ItemContent = listItem.ItemContent
-      };
-
-      context.ListItems.Add(newItem);
-      await context.SaveChangesAsync();
-
-      return newItem;
+    [HttpPost ("Item")]
+    public async Task<ActionResult<ListItem>> AddItem ([FromBody] ListItemDto listItem) {
+      var newItem = await repo.AddItemAsync(listItem);
+      return Ok(newItem);
     }
 
-    [HttpDelete("Item/{id}")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
-    public async Task<StatusCodeResult> RemoveItem(int id) 
-    {
-      var item = await context.ListItems.FindAsync(id);
-      if (item != null)
-      {
-        context.ListItems.Remove(item);
-        await context.SaveChangesAsync();
-        return new StatusCodeResult(StatusCodes.Status204NoContent);
+    [HttpDelete ("Item/{id}")]
+    [ProducesResponseType (StatusCodes.Status204NoContent)]
+    public async Task<StatusCodeResult> RemoveItem (int id) {
+      var item = await repo.GetItemAsync(id);
+      if (item != null) {
+        await repo.DeleteItemAsync(item);
+        return new StatusCodeResult (StatusCodes.Status204NoContent);
       }
-      return new StatusCodeResult(StatusCodes.Status404NotFound);      
+      return new StatusCodeResult (StatusCodes.Status404NotFound);
     }
   }
 }

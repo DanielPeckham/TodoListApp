@@ -11,7 +11,7 @@ import { TodoListCardComponent } from './todo-list-card/todo-list-card.component
 import { ItemsComponent } from './items/items.component';
 
 @NgModule({
-  declarations: [		
+  declarations: [
       AppComponent,
       NavComponent,
       TodoListCardComponent,

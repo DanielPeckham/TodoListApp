@@ -33,7 +33,7 @@ export class ItemsComponent implements OnInit {
     this.service.addItem(this.model).subscribe(response => {
       this.itemAdded = true;
       this.getListItems();
-      this.model = '';
+      this.model.itemContent = '';
     }, error => {
       console.log(error);
     }
