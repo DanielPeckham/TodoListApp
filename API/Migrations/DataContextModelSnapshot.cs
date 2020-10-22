@@ -21,7 +21,7 @@ namespace API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Item")
+                    b.Property<string>("ItemContent")
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

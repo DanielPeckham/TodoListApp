@@ -8,20 +8,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class AppComponent implements OnInit {
   title = 'My Todo List';
-  items: any;
 
-  constructor(private http: HttpClient) {}
+  constructor() {}
 
   ngOnInit() {
-    this.getListItems();
   }
 
-  getListItems() {
-    this.http.get('https://localhost:5001/api/todolist').subscribe(response => {
-      this.items = response;
-    }, error => {
-      console.log(error);
-    }
-    );
-  }
 }
